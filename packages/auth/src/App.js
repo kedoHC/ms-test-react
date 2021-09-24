@@ -8,14 +8,19 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import store, { persistor } from "./_redux/store";
 import messages from "../src/_core/i18n/es.json"
-
+import axios from "axios";
 import Login from "./components/Login"
 import Registration from "./components/Registration"
 import ForgotPassword from "./components/ForgotPassword"
 
+import { setupAxios } from "./_redux/setupAxios";
+
 const generateClassName = createGenerateClassName({
     productionPrefix: "auth"
 })
+
+
+setupAxios(axios, store);
 
 export default ({ history, onSignIn, theme }) => {
 

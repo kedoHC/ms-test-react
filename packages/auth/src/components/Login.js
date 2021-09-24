@@ -1,25 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-// import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { connect } from "react-redux";
+import { FormattedMessage, injectIntl } from "react-intl";
+// import * as auth from "../_redux/authRedux";
+// import * as user from "app/modules/UserProfile/_redux/userRedux";
+import { login } from "../_redux/authCrud";
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import IconButton from '@material-ui/core/IconButton';
-import { FormattedMessage, injectIntl } from "react-intl";
-import { Link as RouterLink } from "react-router-dom";
 import Link from '@material-ui/core/Link';
+import Alert from '@material-ui/lab/Alert';
+// import { SEGMENT__LoginUser } from "../../../segment/segment"
+import CircularProgress from '@material-ui/core/CircularProgress';
 import useStyles from './styles'
+import TextField from '@material-ui/core/TextField';
 
 const  SignIn = ( props ) => {
 
@@ -65,8 +64,38 @@ const  SignIn = ( props ) => {
 
 		onSubmit: (values, { setStatus, setSubmitting }) => {
 
-			console.log( values )
-			props.onSignIn()
+			// console.log( values )
+			// props.onSignIn()
+
+			setLoading(true)
+			setTimeout(() => {
+				login(values.email, values.password)
+					.then((response) => {
+
+						// SEGMENT__LoginUser({
+						// 	idUser: response.data.uuid,
+						// 	email: values.email,
+						// 	name: response.data.name,
+						// 	role: response.data.role
+						// })
+
+						setLoading(false)
+						props.login(response);
+						props.setInitialData(response.data);
+					})
+					.catch(() => {
+						setLoading(false)
+						setSubmitting(false);
+						setStatus(
+							intl.formatMessage({
+								id: "AUTH.VALIDATION.INVALID_LOGIN",
+							})
+						);
+						setTimeout(() => {
+							setStatus("")
+						}, 3000);
+					});
+			}, 1000);
 		},
 	});
 
