@@ -1,11 +1,13 @@
 import React, { useRef, useEffect } from "react"
-import { mount } from "marketing/MarketingApp"
+import { mount } from "auth/AuthApp"
 import { useHistory } from "react-router-dom"
+import { connect } from "react-redux";
+import { theme } from "../_core/styles/themeProvider"
+import * as container from '../_redux/containerRedux'
 
-export default () => {
+const AuthApp = ({ login }) => {
 
     const ref = useRef(null)
-
     const history = useHistory()
 
     useEffect(() => {
@@ -17,11 +19,21 @@ export default () => {
                 if( pathname !== nextPathname){
                     history.push( nextPathname ) 
                 }
-            }
+            },
+            onSignIn: login,
+            theme
         })
-
+        
         history.listen( onParentNavigate )
+
     }, [])
 
     return <div ref={ref} />
 }
+
+export default connect(
+    ({ container }) => ({
+        isAuthorized: container.isAuthorized
+    }),
+    { ...container.actions }
+)(AuthApp);
